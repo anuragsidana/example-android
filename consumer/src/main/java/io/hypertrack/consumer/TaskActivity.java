@@ -103,16 +103,19 @@ public class TaskActivity extends AppCompatActivity {
         this.hideMapButton();
         this.hideStatusTextView();
 
-        this.mConsumerClient.trackTask(taskID, this, new HTTaskCallBack() {
-            @Override
-            public void onSuccess(HTTask htTask) {
-                onTrackTaskSuccess(htTask);
-            }
+        this.mConsumerClient.trackTask(
+                taskID,
+                this,
+                new HTTaskCallBack() {
+                    @Override
+                    public void onSuccess(HTTask htTask) {
+                      onTrackTaskSuccess(htTask);
+                    }
 
-            @Override
-            public void onError(Exception e) {
-                onTrackTaskError(e);
-            }
+                    @Override
+                    public void onError(Exception e) {
+                        onTrackTaskError(e);
+                    }
         });
     }
 
