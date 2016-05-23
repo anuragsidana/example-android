@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Consumer</string>
+    <string name="title_activity_task">Enter TaskID</string>
+    <string name="enter_task_id">Enter Task ID</string>
+    <string name="go">GO</string>
+    <string name="status">Status</string>
+    <string name="title_activity_map">Getting status...</string>
 </resources>
