@@ -1,4 +1,4 @@
-package io.hypertrack.consumer;
+package io.hypertrack.example_android.consumer;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,17 +24,5 @@ public class MainActivity extends AppCompatActivity {
 
         htMapFragment = (HTMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.htMapfragment);
-
-//        htMapFragment.trackTask(taskID, new HTTaskCallBack() {
-//            @Override
-//            public void onSuccess(HTTask task) {
-//
-//            }
-//
-//            @Override
-//            public void onError(Exception exception) {
-//
-//            }
-//        });
     }
 }

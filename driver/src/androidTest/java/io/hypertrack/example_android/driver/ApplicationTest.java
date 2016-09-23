@@ -1,4 +1,4 @@
-package io.hypertrack.example_android;
+package io.hypertrack.example_android.driver;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
