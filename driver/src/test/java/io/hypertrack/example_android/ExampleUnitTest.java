@@ -1,4 +1,4 @@
-package io.hypertrack.driver;
+package io.hypertrack.example_android;
 
 import org.junit.Test;
 
