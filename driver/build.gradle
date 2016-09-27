@@ -28,7 +28,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
 
-    compile('io.hypertrack:transmitter:1.2.21:release@aar') {
+    compile('io.hypertrack:transmitter:1.2.23:release@aar') {
         transitive = true;
     }
 }
