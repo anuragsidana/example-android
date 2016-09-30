@@ -1,15 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -18,55 +15,101 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_gravity="top"
+                android:theme="@style/AppTheme.AppBarOverlay">
 
-                <!--<EditText-->
-                    <!--android:id="@+id/OrderEditText"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:hint="Enter Order ID" />-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/startTripButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Start Trip" />-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/endTripButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="End Trip" />-->
-
-                <Button
-                    android:id="@+id/startTaskButton"
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Start task" />
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:elevation="8dp"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+            </android.support.design.widget.AppBarLayout>
 
-                <Button
-                    android:id="@+id/completeTaskButton"
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/margin_high"
+                android:paddingLeft="@dimen/margin_high"
+                android:paddingRight="@dimen/margin_high"
+                android:paddingTop="@dimen/margin_high">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Complete task" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <!--<Button-->
-                    <!--android:id="@+id/startShiftButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:text="Start Shift" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                <!--<Button-->
-                    <!--android:id="@+id/endShiftButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="End Shift" />-->
-                <!---->
-            </LinearLayout>
+                        <!--<EditText-->
+                        <!--android:id="@+id/OrderEditText"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:hint="Enter Order ID" />-->
+
+                        <!--<Button-->
+                        <!--android:id="@+id/startTripButton"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="Start Trip" />-->
+
+                        <!--<Button-->
+                        <!--android:id="@+id/endTripButton"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="End Trip" />-->
+
+                        <Button
+                            android:id="@+id/startTaskButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Start task" />
+
+                        <Button
+                            android:id="@+id/completeTaskButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Complete task" />
+
+                        <!--<Button-->
+                        <!--android:id="@+id/startShiftButton"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:text="Start Shift" />-->
+
+                        <!--<Button-->
+                        <!--android:id="@+id/endShiftButton"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="End Shift" />-->
+                        <!---->
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/main_loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#88FFFFFF"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

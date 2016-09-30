@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Driver Example-Android</string>
+    <string name="login_activity_title">Login</string>
+
+    <!-- Login Activity strings -->
+    <string name="login_button_text">Login</string>
+    <string name="login_screen_header">Enter your username and password \nto login.</string>
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
+
+    <string name="login_username_empty_error">Username can\'t be empty. Please try again</string>
+    <string name="login_username_invalid_error">Username is invalid. Please try again</string>
+    <string name="login_password_empty_error">Password can\'t be empty. Please try again</string>
+    <string name="login_password_invalid_error">Password is invalid. Please try again</string>
+
+    <string name="login_success_msg">Driver Login successful</string>
+    <string name="login_shift_start_error_msg">Error while login. </string>
+
+    <!-- Main Activity Strings -->
+    <string name="main_menu_logout_title">Logout</string>
+    <string name="main_logout_error_active_trip_msg">Error while logging out. Please complete active trip first.</string>
+    <string name="main_logout_success_msg">Logout successful</string>
+    <string name="main_logout_error_shift_end_failed_msg">Error while logging out. </string>
 </resources>
