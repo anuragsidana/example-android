@@ -30,7 +30,40 @@ public class LoginActivity extends BaseActivity {
     private EditText userNameText, passwordText;
     private LinearLayout loginBtnLoader;
 
+    /**
+     * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs.
+     * The same DRIVER_ID can be used to maintain the session in b/w Login & Logout on the app.
+     */
     private String driverID;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        // Initialize Toolbar
+        initToolbar(getString(R.string.login_activity_title), false);
+
+        // Initialize UI Views
+        initUIViews();
+    }
+
+    private void initUIViews() {
+        // Initialize UserName Views
+        userNameHeader = (TextInputLayout) findViewById(R.id.login_username_header);
+        userNameText = (EditText) findViewById(R.id.login_username);
+        if (userNameText != null)
+            userNameText.addTextChangedListener(userNameTextWatcher);
+
+        // Initialize Password Views
+        passwordHeader = (TextInputLayout) findViewById(R.id.login_password_header);
+        passwordText = (EditText) findViewById(R.id.login_password);
+        if (passwordText != null)
+            passwordText.addTextChangedListener(passwordTextWatcher);
+
+        // Initialize Login Btn Loader
+        loginBtnLoader = (LinearLayout) findViewById(R.id.login_driver_login_btn_loader);
+    }
 
     private TextWatcher userNameTextWatcher = new TextWatcher() {
         @Override
@@ -66,35 +99,6 @@ public class LoginActivity extends BaseActivity {
         }
     };
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        // Initialize Toolbar
-        initToolbar(getString(R.string.login_activity_title), false);
-
-        // Initialize UI Views
-        initUIViews();
-    }
-
-    private void initUIViews() {
-        // Initialize UserName Views
-        userNameHeader = (TextInputLayout) findViewById(R.id.login_username_header);
-        userNameText = (EditText) findViewById(R.id.login_username);
-        if (userNameText != null)
-            userNameText.addTextChangedListener(userNameTextWatcher);
-
-        // Initialize Password Views
-        passwordHeader = (TextInputLayout) findViewById(R.id.login_password_header);
-        passwordText = (EditText) findViewById(R.id.login_password);
-        if (passwordText != null)
-            passwordText.addTextChangedListener(passwordTextWatcher);
-
-        // Initialize Login Btn Loader
-        loginBtnLoader = (LinearLayout) findViewById(R.id.login_driver_login_btn_loader);
-    }
-
     public void onLoginButtonClick(View view) {
         if (!validateUserCredentials())
             return;
@@ -106,13 +110,14 @@ public class LoginActivity extends BaseActivity {
         // Show Login Button loader
         loginBtnLoader.setVisibility(View.VISIBLE);
 
-        // Implement Network call for Driver Login here.
-        driverID = "YOUR_DRIVER_ID";
+        /**
+         * Implement Network call for Driver Login here.
+         */
 
-        // Save DriverID
+        // On success, Save DriverID to SharedPreferences
+        driverID = "YOUR_DRIVER_ID";
         SharedPreferenceStore.setDriverID(getApplicationContext(), driverID);
 
-        // On success
         onDriverLoginSuccess();
     }
 

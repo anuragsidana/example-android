@@ -49,49 +49,23 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!--<EditText-->
-                        <!--android:id="@+id/OrderEditText"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:hint="Enter Order ID" />-->
-
-                        <!--<Button-->
-                        <!--android:id="@+id/startTripButton"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="Start Trip" />-->
-
-                        <!--<Button-->
-                        <!--android:id="@+id/endTripButton"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="End Trip" />-->
-
                         <Button
-                            android:id="@+id/startTaskButton"
+                            android:id="@+id/startTripButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Start task" />
+                            android:text="@string/start_trip_btn" />
 
                         <Button
                             android:id="@+id/completeTaskButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Complete task" />
+                            android:text="@string/complete_task_btn" />
 
-                        <!--<Button-->
-                        <!--android:id="@+id/startShiftButton"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_gravity="center_horizontal"-->
-                        <!--android:text="Start Shift" />-->
-
-                        <!--<Button-->
-                        <!--android:id="@+id/endShiftButton"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="End Shift" />-->
-                        <!---->
+                        <Button
+                            android:id="@+id/completeTripButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/complete_trip_btn" />
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>

@@ -2,6 +2,10 @@
     <string name="app_name">Driver Example-Android</string>
     <string name="login_activity_title">Login</string>
 
+    <string name="start_trip_btn">Start a Trip</string>
+    <string name="complete_task_btn">Complete a Task in a Trip</string>
+    <string name="complete_trip_btn">Complete a Trip</string>
+
     <!-- Login Activity strings -->
     <string name="login_button_text">Login</string>
     <string name="login_screen_header">Enter your username and password \nto login.</string>
@@ -21,4 +25,6 @@
     <string name="main_logout_error_active_trip_msg">Error while logging out. Please complete active trip first.</string>
     <string name="main_logout_success_msg">Logout successful</string>
     <string name="main_logout_error_shift_end_failed_msg">Error while logging out. </string>
+
+    <string name="main_no_active_trip_msg">No active trip currently.</string>
 </resources>

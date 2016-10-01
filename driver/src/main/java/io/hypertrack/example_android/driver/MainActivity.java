@@ -11,20 +11,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import io.hypertrack.example_android.driver.util.BaseActivity;
 import io.hypertrack.example_android.driver.util.SharedPreferenceStore;
-import io.hypertrack.lib.common.model.HTTask;
 import io.hypertrack.lib.transmitter.model.HTShift;
-import io.hypertrack.lib.transmitter.model.HTTaskParams;
-import io.hypertrack.lib.transmitter.model.HTTaskParamsBuilder;
+import io.hypertrack.lib.transmitter.model.HTTrip;
+import io.hypertrack.lib.transmitter.model.HTTripParams;
+import io.hypertrack.lib.transmitter.model.HTTripParamsBuilder;
 import io.hypertrack.lib.transmitter.model.callback.HTCompleteTaskStatusCallback;
 import io.hypertrack.lib.transmitter.model.callback.HTShiftStatusCallback;
-import io.hypertrack.lib.transmitter.model.callback.HTTaskStatusCallback;
+import io.hypertrack.lib.transmitter.model.callback.HTTripStatusCallback;
 import io.hypertrack.lib.transmitter.service.HTTransmitterService;
 
 public class MainActivity extends BaseActivity {
 
-    private Button startTaskButton, completeTaskButton;
     private LinearLayout loadingLayout;
 
     /**
@@ -53,59 +54,76 @@ public class MainActivity extends BaseActivity {
         initToolbar(getString(R.string.app_name), false);
 
         // Initialize UI Views
-        startTaskButton = (Button) findViewById(R.id.startTaskButton);
-        completeTaskButton = (Button) findViewById(R.id.completeTaskButton);
+        initUIViews();
+
+        /**
+         * @IMPORTANT:
+         * Implement Network call to fetch ORDERS/TRANSACTIONS for the DRIVER here.
+         * Once the list of orders/transactions have been fetched, implement
+         * startTrip, completeTask & completeTrip calls either with or without user interaction
+         * depending on the specific requirements in the workflow of your business and you app.
+         */
+    }
+
+    private void initUIViews() {
+        // Initialize StartTrip Button
+        Button startTripBtn = (Button) findViewById(R.id.startTripButton);
+        if (startTripBtn != null)
+            startTripBtn.setOnClickListener(startTripBtnListener);
+
+        // Initialize CompleteTask Button
+        Button completeTaskBtn = (Button) findViewById(R.id.completeTaskButton);
+        if (completeTaskBtn != null)
+            completeTaskBtn.setOnClickListener(completeTaskBtnListener);
+
+        // Initialize CompleteTrip Button
+        Button completeTripBtn = (Button) findViewById(R.id.completeTripButton);
+        if (completeTripBtn != null)
+            completeTripBtn.setOnClickListener(completeTripBtnListener);
+
         loadingLayout = (LinearLayout) findViewById(R.id.main_loading_layout);
-
-        // Set ClickListeners for UI Elements
-        startTaskButton.setOnClickListener(startButtonListener);
-        completeTaskButton.setOnClickListener(completeTaskListener);
     }
 
-    public void proceedToLoginScreen() {
-        // On Driver Logout
-        SharedPreferenceStore.clearDriverID(getApplicationContext());
-
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(loginIntent);
-        finish();
-    }
-
-    // Click Listener for StartTask Button
-    private View.OnClickListener startButtonListener = new View.OnClickListener() {
+    // Click Listener for StartTrip Button
+    private View.OnClickListener startTripBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             mProgressDialog = new ProgressDialog(MainActivity.this);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
-            HTTaskParamsBuilder htTaskParamsBuilder = new HTTaskParamsBuilder();
-            final HTTaskParams htTaskParams = htTaskParamsBuilder
-                    .setTaskID(taskID)
-                    .setDriverID(driverID)
-                    .createHTTaskParams();
+            ArrayList<String> taskIDs = new ArrayList<>();
+            taskIDs.add(taskID);
+
+            HTTripParams htTripParams = new HTTripParamsBuilder().setDriverID(driverID)
+                    .setTaskIDs(taskIDs)
+                    .setOrderedTasks(false)
+                    .setIsAutoEnded(false)
+                    .createHTTripParams();
 
             HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
-            transmitterService.startTask(htTaskParams, new HTTaskStatusCallback() {
+            transmitterService.startTrip(htTripParams, new HTTripStatusCallback() {
                 @Override
-                public void onError(Exception error) {
+                public void onSuccess(boolean isOffline, HTTrip htTrip) {
                     mProgressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Task start failed: " + error, Toast.LENGTH_SHORT).show();
+                    if (isOffline) {
+                        Toast.makeText(MainActivity.this, "Trip started offline", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Trip started: " + htTrip, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
-                public void onSuccess(boolean isOffline, HTTask task) {
+                public void onError(Exception e) {
                     mProgressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Task started: " + task, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Task start failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
-
     };
 
     // Click Listener for CompleteTask Button
-    private View.OnClickListener completeTaskListener = new View.OnClickListener() {
+    private View.OnClickListener completeTaskBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             mProgressDialog = new ProgressDialog(MainActivity.this);
@@ -130,6 +148,41 @@ public class MainActivity extends BaseActivity {
 
     };
 
+    // Click Listener for CompleteTrip Button
+    private View.OnClickListener completeTripBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
+            if (!transmitterService.isTripActive()) {
+                Toast.makeText(MainActivity.this, R.string.main_no_active_trip_msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
+            transmitterService.completeTrip(new HTTripStatusCallback() {
+                @Override
+                public void onError(Exception error) {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip complete failed: " + error, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSuccess(boolean isOffline, HTTrip htTrip) {
+                    mProgressDialog.dismiss();
+                    if (isOffline) {
+                        Toast.makeText(MainActivity.this, "Trip completed offline for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Trip completed: " + htTrip, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+    };
+
     public void onLogoutClicked(MenuItem menuItem) {
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
         if (transmitterService.isTripActive()) {
@@ -138,7 +191,6 @@ public class MainActivity extends BaseActivity {
         }
 
         if (transmitterService.isShiftActive()) {
-
             loadingLayout.setVisibility(View.VISIBLE);
 
             transmitterService.endShift(new HTShiftStatusCallback() {
@@ -160,6 +212,16 @@ public class MainActivity extends BaseActivity {
         } else {
             proceedToLoginScreen();
         }
+    }
+
+    public void proceedToLoginScreen() {
+        // On Driver Logout
+        SharedPreferenceStore.clearDriverID(getApplicationContext());
+
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(loginIntent);
+        finish();
     }
 
     @Override
