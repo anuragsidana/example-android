@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.hypertrack.lib.common.HyperTrack;
 import io.hypertrack.lib.consumer.network.HTConsumerClient;
 import io.hypertrack.lib.consumer.view.HTMapAdapter;
 import io.hypertrack.lib.consumer.view.HTMapFragment;
@@ -35,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set HyperTrack Publishable Key & Initialize ConsumerSDK
+        HyperTrack.setPublishableApiKey("YOUR_PUBLISHABLE_KEY", getApplicationContext());
+        HTConsumerClient.initHTConsumerClient(getApplicationContext());
 
         // Initialize HyperTrack Consumer Client (provides access to Tasks being tracked in ConsumerSDK)
         mHTConsumerClient = HTConsumerClient.getInstance(getApplicationContext());

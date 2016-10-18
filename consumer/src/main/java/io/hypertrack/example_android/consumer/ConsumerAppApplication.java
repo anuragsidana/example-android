@@ -14,8 +14,5 @@ public class ConsumerAppApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Set HyperTrack Publishable Key & Initialize ConsumerSDK
-        HyperTrack.setPublishableApiKey("<YOUR_PUBLISHABLE_KEY_HERE>", getApplicationContext());
-        HTConsumerClient.initHTConsumerClient(getApplicationContext());
     }
 }
