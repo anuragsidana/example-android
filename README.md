@@ -1,7 +1,7 @@
 # HyperTrack example Android apps
 [![Slack Status](http://slack.hypertrack.io/badge.svg)](http://slack.hypertrack.io)
 
-Example application built with the HyperTrack `TransmitterSDK` and `ConsumerSDK` for Android. For the iOS equivalent, refer to [example-io](https://github.com/hypertrack/example-ios).
+Example application built with the HyperTrack `TransmitterSDK` and `ConsumerSDK` for Android. For the iOS equivalent, refer to [example-ios](https://github.com/hypertrack/example-ios).
 
 ## Example modules
 1. Driver - example of integration with `TransmitterSDK`, which transmits location data for HyperTrack Trips/Shifts
