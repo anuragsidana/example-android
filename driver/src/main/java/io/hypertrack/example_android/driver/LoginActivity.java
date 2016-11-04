@@ -160,7 +160,18 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         driverID = "YOUR_DRIVER_ID";
         SharedPreferenceStore.setDriverID(getApplicationContext(), driverID);
 
-        onDriverLoginSuccess();
+//        onDriverLoginSuccess();
+
+        Toast.makeText(LoginActivity.this, R.string.login_success_msg, Toast.LENGTH_SHORT).show();
+
+        // Start Driver Session by starting MainActivity
+        TaskStackBuilder.create(LoginActivity.this)
+                .addNextIntentWithParentStack(new Intent(LoginActivity.this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                .startActivities();
+        finish();
+
+        loginBtnLoader.setVisibility(View.GONE);
     }
 
     private void onDriverLoginSuccess() {
