@@ -32,11 +32,11 @@ public class MainActivity extends BaseActivity {
     /**
      * Your ORDER_ID maps to HyperTrack's TASK_ID
      */
-    private String taskID = "af1a7af5-5753-48a1-be8c-89b49a0c7ae7";
+    private String taskID = "YOUR_TASK_ID";
     /**
      * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs
      */
-    private String driverID = "b6e22d87-a934-4ad0-afb8-2a84fbbe9dd0";
+    private String driverID = "YOUR_DRIVER_ID";
 
     private ProgressDialog mProgressDialog;
 
