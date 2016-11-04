@@ -66,6 +66,28 @@ public class MainActivity extends BaseActivity {
          */
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /**
+         * Method to establish DriverSDK connection for a DriverID. Call this method when the DriverSDK connection
+         * needs to established, to be able to implement backend-start calls. (Preferably in the onResume()
+         * method of your app's Launcher Activity)
+         * <p>
+         * For more reliability in backend-start calls, call this method just before backend-start need to
+         * happen in your app's workflow.
+         *
+         * For more info refer to the documentation at
+         * <a href="http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec">
+         *     http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec</a>.
+         */
+
+        if (!TextUtils.isEmpty(driverID)) {
+            HTTransmitterService.connectDriver(getApplicationContext(), driverID);
+        }
+    }
+
     private void initUIViews() {
         // Initialize StartTrip Button
         Button startTripBtn = (Button) findViewById(R.id.startTripButton);
