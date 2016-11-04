@@ -31,44 +31,47 @@
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
             </android.support.design.widget.AppBarLayout>
 
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/margin_high"
-                android:paddingLeft="@dimen/margin_high"
-                android:paddingRight="@dimen/margin_high"
-                android:paddingTop="@dimen/margin_high">
+                android:orientation="vertical">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    tools:context=".view.Home" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/margin_high"
+                    android:paddingLeft="@dimen/margin_high"
+                    android:paddingRight="@dimen/margin_high"
+                    android:paddingTop="@dimen/margin_high"
                     android:orientation="vertical">
 
-                    <LinearLayout
+                    <Button
+                        android:id="@+id/startTripButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:text="@string/start_trip_btn" />
 
-                        <Button
-                            android:id="@+id/startTripButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/start_trip_btn" />
+                    <Button
+                        android:id="@+id/completeTaskButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/complete_task_btn" />
 
-                        <Button
-                            android:id="@+id/completeTaskButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/complete_task_btn" />
-
-                        <Button
-                            android:id="@+id/endTripButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/end_trip_btn" />
-                    </LinearLayout>
+                    <Button
+                        android:id="@+id/endTripButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/end_trip_btn" />
                 </LinearLayout>
-            </ScrollView>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
