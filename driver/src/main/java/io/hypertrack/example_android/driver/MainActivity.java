@@ -32,11 +32,11 @@ public class MainActivity extends BaseActivity {
     /**
      * Your ORDER_ID maps to HyperTrack's TASK_ID
      */
-    private String taskID = "YOUR_TASK_ID";
+    private String taskID = "af1a7af5-5753-48a1-be8c-89b49a0c7ae7";
     /**
      * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs
      */
-    private String driverID = "YOUR_DRIVER_ID";
+    private String driverID = "b6e22d87-a934-4ad0-afb8-2a84fbbe9dd0";
 
     private ProgressDialog mProgressDialog;
 
@@ -246,6 +246,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onSuccess(HTShift htShift) {
                     loadingLayout.setVisibility(View.GONE);
+
                     Toast.makeText(MainActivity.this, R.string.main_logout_success_msg, Toast.LENGTH_SHORT).show();
                     proceedToLoginScreen();
                 }
@@ -263,10 +264,15 @@ public class MainActivity extends BaseActivity {
                             + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+            return;
         }
+
+        proceedToLoginScreen();
     }
 
     public void proceedToLoginScreen() {
+        loadingLayout.setVisibility(View.GONE);
+
         // Check if driver is currently active
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
         if (transmitterService.isDriverLive()) {
