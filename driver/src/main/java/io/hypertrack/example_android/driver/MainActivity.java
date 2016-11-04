@@ -81,6 +81,10 @@ public class MainActivity extends BaseActivity {
          * For more info refer to the documentation at
          * <a href="http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec">
          *     http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec</a>.
+         *
+         * For {@link HTTransmitterService} API javadocs, refer to
+         * <a href="https://hypertrack.github.io/android-docs/1.4.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
+         *     https://hypertrack.github.io/android-docs/1.4.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
          */
 
         if (!TextUtils.isEmpty(driverID)) {
@@ -133,6 +137,7 @@ public class MainActivity extends BaseActivity {
                         Toast.makeText(MainActivity.this, "Trip started offline", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(MainActivity.this, "Trip started: " + htTrip, Toast.LENGTH_SHORT).show();
+                        SharedPreferenceStore.setTripID(MainActivity.this, htTrip.getId());
                     }
                 }
 
@@ -181,63 +186,98 @@ public class MainActivity extends BaseActivity {
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
-            /**
-             * Call {@link HTTransmitterService#endAllTrips(String, HTEndAllTripsCallback)} method in case
-             * <b>Trip Id</b> is not available on the app. This method will ends all active trips for
-             * the given driver.
-             */
-            transmitterService.endAllTrips(driverID, new HTEndAllTripsCallback() {
-                @Override
-                public void onSuccess() {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Trip ended for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
-                }
+            // Check if TripID is available in the app
+            String tripID = SharedPreferenceStore.getTripID(MainActivity.this);
+            if (!TextUtils.isEmpty(tripID)) {
+                /**
+                 * Call {@link HTTransmitterService#endTrip(String, HTTripStatusCallback)} method in case
+                 * **Trip Id** has been passed on to the driver app by your backend or there are
+                 * multiple trips active for the driver. This method will end this trip for the given driver.
+                 */
+                transmitterService.endTrip(tripID, new HTTripStatusCallback() {
+                    @Override
+                    public void onSuccess(boolean isOffline, HTTrip htTrip) {
+                        mProgressDialog.dismiss();
+                        if (isOffline) {
+                            Toast.makeText(MainActivity.this, "Trip ended offline for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Trip ended: " + htTrip, Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-                @Override
-                public void onError(Exception e) {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Trip complete failed: " + e, Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onError(Exception e) {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Trip end failed: " + e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                /**
+                 * Call {@link HTTransmitterService#endAllTrips(String, HTEndAllTripsCallback)} method in case
+                 * **Trip Id** is not available on the app. This method will ends all active trips for
+                 * the given driver.
+                 */
+                transmitterService.endAllTrips(driverID, new HTEndAllTripsCallback() {
+                    @Override
+                    public void onSuccess() {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Trip ended for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Trip end failed: " + e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
     };
 
     public void onLogoutClicked(MenuItem menuItem) {
+        loadingLayout.setVisibility(View.VISIBLE);
+
+        HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
+
+        String shiftID = SharedPreferenceStore.getShiftID(this);
+        if (!TextUtils.isEmpty(shiftID)) {
+            transmitterService.endShift(new HTShiftStatusCallback() {
+                @Override
+                public void onSuccess(HTShift htShift) {
+                    loadingLayout.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, R.string.main_logout_success_msg, Toast.LENGTH_SHORT).show();
+                    proceedToLoginScreen();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    loadingLayout.setVisibility(View.GONE);
+
+                    // TODO: 04/11/16 Add proper exceptions which can be handled
+                    if (e.getMessage().equalsIgnoreCase("Cannot end shift. No active shift.")) {
+                        proceedToLoginScreen();
+                        return;
+                    }
+                    Toast.makeText(MainActivity.this, R.string.main_logout_error_shift_end_failed_msg
+                            + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    public void proceedToLoginScreen() {
+        // Check if driver is currently active
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
         if (transmitterService.isDriverLive()) {
             Toast.makeText(MainActivity.this, R.string.main_logout_error_active_trip_msg, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        loadingLayout.setVisibility(View.VISIBLE);
-
-        transmitterService.endShift(new HTShiftStatusCallback() {
-            @Override
-            public void onSuccess(HTShift htShift) {
-                loadingLayout.setVisibility(View.GONE);
-                Toast.makeText(MainActivity.this, R.string.main_logout_success_msg, Toast.LENGTH_SHORT).show();
-                proceedToLoginScreen();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                loadingLayout.setVisibility(View.GONE);
-
-                // TODO: 04/11/16 Add proper exceptions which can be handled
-                if (e.getMessage().equalsIgnoreCase("Cannot end shift. No active shift.")) {
-                    proceedToLoginScreen();
-                    return;
-                }
-
-                Toast.makeText(MainActivity.this, R.string.main_logout_error_shift_end_failed_msg
-                        + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void proceedToLoginScreen() {
-        // On Driver Logout
+        // Clear Saved Data on Driver Logout
         SharedPreferenceStore.clearDriverID(getApplicationContext());
+        SharedPreferenceStore.clearShiftID(getApplicationContext());
+        SharedPreferenceStore.clearTripID(getApplicationContext());
 
         Intent loginIntent = new Intent(this, LoginActivity.class);
         loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

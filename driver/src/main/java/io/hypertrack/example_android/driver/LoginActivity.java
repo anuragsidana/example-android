@@ -130,6 +130,10 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(HTShift htShift) {
                 Toast.makeText(LoginActivity.this, R.string.login_success_msg, Toast.LENGTH_SHORT).show();
 
+                // Save ShiftID to be used to end current shift
+                SharedPreferenceStore.setShiftID(LoginActivity.this, htShift.getId());
+
+                // Start Driver Session by starting MainActivity
                 TaskStackBuilder.create(LoginActivity.this)
                         .addNextIntentWithParentStack(new Intent(LoginActivity.this, MainActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
