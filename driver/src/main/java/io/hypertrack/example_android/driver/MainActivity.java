@@ -20,6 +20,7 @@ import io.hypertrack.lib.transmitter.model.HTTrip;
 import io.hypertrack.lib.transmitter.model.HTTripParams;
 import io.hypertrack.lib.transmitter.model.HTTripParamsBuilder;
 import io.hypertrack.lib.transmitter.model.callback.HTCompleteTaskStatusCallback;
+import io.hypertrack.lib.transmitter.model.callback.HTEndAllTripsCallback;
 import io.hypertrack.lib.transmitter.model.callback.HTShiftStatusCallback;
 import io.hypertrack.lib.transmitter.model.callback.HTTripStatusCallback;
 import io.hypertrack.lib.transmitter.service.HTTransmitterService;
@@ -60,7 +61,7 @@ public class MainActivity extends BaseActivity {
          * @IMPORTANT:
          * Implement Network call to fetch ORDERS/TRANSACTIONS for the DRIVER here.
          * Once the list of orders/transactions have been fetched, implement
-         * startTrip, completeTask & completeTrip calls either with or without user interaction
+         * startTrip, completeTask & endTrip calls either with or without user interaction
          * depending on the specific requirements in the workflow of your business and you app.
          */
     }
@@ -76,10 +77,10 @@ public class MainActivity extends BaseActivity {
         if (completeTaskBtn != null)
             completeTaskBtn.setOnClickListener(completeTaskBtnListener);
 
-        // Initialize CompleteTrip Button
-        Button completeTripBtn = (Button) findViewById(R.id.completeTripButton);
-        if (completeTripBtn != null)
-            completeTripBtn.setOnClickListener(completeTripBtnListener);
+        // Initialize EndTrip Button
+        Button endTripBtn = (Button) findViewById(R.id.endTripButton);
+        if (endTripBtn != null)
+            endTripBtn.setOnClickListener(endTripBtnListener);
 
         loadingLayout = (LinearLayout) findViewById(R.id.main_loading_layout);
     }
@@ -148,70 +149,68 @@ public class MainActivity extends BaseActivity {
 
     };
 
-    // Click Listener for CompleteTrip Button
-    private View.OnClickListener completeTripBtnListener = new View.OnClickListener() {
+    // Click Listener for EndTrip Button
+    private View.OnClickListener endTripBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
-            if (!transmitterService.isTripActive()) {
-                Toast.makeText(MainActivity.this, R.string.main_no_active_trip_msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             mProgressDialog = new ProgressDialog(MainActivity.this);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
-            transmitterService.completeTrip(new HTTripStatusCallback() {
+            /**
+             * Call {@link HTTransmitterService#endAllTrips(String, HTEndAllTripsCallback)} method in case
+             * <b>Trip Id</b> is not available on the app. This method will ends all active trips for
+             * the given driver.
+             */
+            transmitterService.endAllTrips(driverID, new HTEndAllTripsCallback() {
                 @Override
-                public void onError(Exception error) {
+                public void onSuccess() {
                     mProgressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Trip complete failed: " + error, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onSuccess(boolean isOffline, HTTrip htTrip) {
-                    mProgressDialog.dismiss();
-                    if (isOffline) {
-                        Toast.makeText(MainActivity.this, "Trip completed offline for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Trip completed: " + htTrip, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-
-    };
-
-    public void onLogoutClicked(MenuItem menuItem) {
-        HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
-        if (transmitterService.isTripActive()) {
-            Toast.makeText(MainActivity.this, R.string.main_logout_error_active_trip_msg, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (transmitterService.isShiftActive()) {
-            loadingLayout.setVisibility(View.VISIBLE);
-
-            transmitterService.endShift(new HTShiftStatusCallback() {
-                @Override
-                public void onSuccess(HTShift htShift) {
-                    loadingLayout.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, R.string.main_logout_success_msg, Toast.LENGTH_SHORT).show();
-                    proceedToLoginScreen();
+                    Toast.makeText(MainActivity.this, "Trip ended for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    loadingLayout.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, R.string.main_logout_error_shift_end_failed_msg
-                            + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip complete failed: " + e, Toast.LENGTH_SHORT).show();
                 }
             });
-
-        } else {
-            proceedToLoginScreen();
         }
+    };
+
+    public void onLogoutClicked(MenuItem menuItem) {
+        HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
+        if (transmitterService.isDriverLive()) {
+            Toast.makeText(MainActivity.this, R.string.main_logout_error_active_trip_msg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        loadingLayout.setVisibility(View.VISIBLE);
+
+        transmitterService.endShift(new HTShiftStatusCallback() {
+            @Override
+            public void onSuccess(HTShift htShift) {
+                loadingLayout.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this, R.string.main_logout_success_msg, Toast.LENGTH_SHORT).show();
+                proceedToLoginScreen();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                loadingLayout.setVisibility(View.GONE);
+
+                // TODO: 04/11/16 Add proper exceptions which can be handled
+                if (e.getMessage().equalsIgnoreCase("Cannot end shift. No active shift.")) {
+                    proceedToLoginScreen();
+                    return;
+                }
+
+                Toast.makeText(MainActivity.this, R.string.main_logout_error_shift_end_failed_msg
+                        + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void proceedToLoginScreen() {
