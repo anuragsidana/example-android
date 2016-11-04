@@ -62,10 +62,10 @@
                             android:text="@string/complete_task_btn" />
 
                         <Button
-                            android:id="@+id/completeTripButton"
+                            android:id="@+id/endTripButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/complete_trip_btn" />
+                            android:text="@string/end_trip_btn" />
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>
