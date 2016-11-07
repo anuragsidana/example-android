@@ -1,6 +1,8 @@
 package io.hypertrack.example_android.driver;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -107,6 +109,10 @@ public class MainActivity extends BaseActivity {
         Button endTripBtn = (Button) findViewById(R.id.endTripButton);
         if (endTripBtn != null)
             endTripBtn.setOnClickListener(endTripBtnListener);
+
+        Button trackDriverOnMapButton = (Button) findViewById(R.id.trackDriverOnMapButton);
+        if (trackDriverOnMapButton != null)
+            trackDriverOnMapButton.setOnClickListener(trackDriverOnMapBtnClickListener);
 
         loadingLayout = (LinearLayout) findViewById(R.id.main_loading_layout);
     }
@@ -234,6 +240,45 @@ public class MainActivity extends BaseActivity {
             }
         }
     };
+
+    private View.OnClickListener trackDriverOnMapBtnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            // Check if Driver is Active currently
+            HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
+            if (!transmitterService.isDriverLive()) {
+
+                // Driver is INACTIVE, Dialog to proceed to DriverMap Screen
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.track_driver_on_map_dialog_title);
+                builder.setPositiveButton(MainActivity.this.getString(android.R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                proceedToDriverMapScreen();
+                            }
+                        });
+                builder.setNegativeButton(MainActivity.this.getString(android.R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.show();
+                return;
+            }
+
+            // Driver is ACTIVE, Proceed to DriverMapScreen
+            proceedToDriverMapScreen();
+        }
+    };
+
+    private void proceedToDriverMapScreen() {
+        Intent driverMapIntent = new Intent(MainActivity.this, DriverMapActivity.class);
+        startActivity(driverMapIntent);
+    }
 
     public void onLogoutClicked(MenuItem menuItem) {
         loadingLayout.setVisibility(View.VISIBLE);

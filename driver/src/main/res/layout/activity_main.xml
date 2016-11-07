@@ -66,6 +66,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/end_trip_btn" />
+
+                        <Button
+                            android:id="@+id/trackDriverOnMapButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/track_driver_on_map_btn"/>
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>
