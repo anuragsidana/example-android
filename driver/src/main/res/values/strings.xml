@@ -5,6 +5,7 @@
     <string name="start_trip_btn">Start a Trip</string>
     <string name="complete_task_btn">Complete a Task in a Trip</string>
     <string name="end_trip_btn">End a Trip</string>
+    <string name="track_driver_on_map_btn">Track Driver on Map</string>
 
     <string name="action_settings">Settings</string>
 
@@ -36,5 +37,4 @@
     <string name="permission_declined_default_msg">Permission was denied</string>
     <string name="location_permission_rationale_msg">Allow %1$s to access this device’s location</string>
     <string name="location_permission_never_allow">Allow %1$s to access this device’s location.\n\nGo to Settings, tap on Permissions, and turn on Location.</string>
-
 </resources>
