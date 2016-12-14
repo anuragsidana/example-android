@@ -47,17 +47,17 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initToolbar(getString(R.string.app_name), false);
+
+        // Initialize UI Views
+        initUIViews();
+
         // Check if Driver is logged in
         String driverID = SharedPreferenceStore.getDriverID(this);
         if (TextUtils.isEmpty(driverID)) {
             proceedToLoginScreen();
             return;
         }
-
-        initToolbar(getString(R.string.app_name), false);
-
-        // Initialize UI Views
-        initUIViews();
 
         /**
          * @IMPORTANT:
