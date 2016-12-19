@@ -21,7 +21,6 @@ android {
 
 repositories {
     maven { url 'http://hypertrack-android-sdk.s3-website-us-west-2.amazonaws.com/' }
-    maven { url "https://repo.eclipse.org/content/repositories/paho-releases/" }
 }
 
 dependencies {
@@ -30,7 +29,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:cardview-v7:23.3.0'
 
-    compile('io.hypertrack:transmitter:1.4.16:release@aar') {
+    compile('io.hypertrack:transmitter:1.4.18:release@aar') {
         transitive = true;
     }
 }
