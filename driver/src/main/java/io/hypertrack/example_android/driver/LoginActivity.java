@@ -65,7 +65,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
      * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs.
      * The same DRIVER_ID can be used to maintain the session in b/w Login & Logout on the app.
      */
-    private String driverID;
+    private String driverID = "YOUR_DRIVER_ID";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -157,7 +157,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
          */
 
         // On success, Save DriverID to SharedPreferences
-        driverID = "YOUR_DRIVER_ID";
+        // driverID = "YOUR_DRIVER_ID";
         SharedPreferenceStore.setDriverID(getApplicationContext(), driverID);
 
         onDriverLoginSuccess();
