@@ -169,6 +169,11 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
         transmitterService.startShift(htShiftParams, new HTShiftStatusCallback() {
             @Override
+            public void onOfflineSuccess() {
+                // Do Nothing as Offline Handling is not enabled for Shifts yet
+            }
+
+            @Override
             public void onSuccess(HTShift htShift) {
                 Toast.makeText(LoginActivity.this, R.string.login_success_msg, Toast.LENGTH_SHORT).show();
 

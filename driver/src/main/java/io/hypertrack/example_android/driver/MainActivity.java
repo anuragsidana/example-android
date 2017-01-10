@@ -22,7 +22,6 @@ import io.hypertrack.lib.transmitter.model.HTTrip;
 import io.hypertrack.lib.transmitter.model.HTTripParams;
 import io.hypertrack.lib.transmitter.model.HTTripParamsBuilder;
 import io.hypertrack.lib.transmitter.model.callback.HTCompleteTaskStatusCallback;
-import io.hypertrack.lib.transmitter.model.callback.HTEndAllTripsCallback;
 import io.hypertrack.lib.transmitter.model.callback.HTShiftStatusCallback;
 import io.hypertrack.lib.transmitter.model.callback.HTTripStatusCallback;
 import io.hypertrack.lib.transmitter.service.HTTransmitterService;
@@ -137,14 +136,15 @@ public class MainActivity extends BaseActivity {
             HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
             transmitterService.startTrip(htTripParams, new HTTripStatusCallback() {
                 @Override
-                public void onSuccess(boolean isOffline, HTTrip htTrip) {
+                public void onOfflineSuccess() {
                     mProgressDialog.dismiss();
-                    if (isOffline) {
-                        Toast.makeText(MainActivity.this, "Trip started offline", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Trip started: " + htTrip, Toast.LENGTH_SHORT).show();
-                        SharedPreferenceStore.setTripID(MainActivity.this, htTrip.getId());
-                    }
+                    Toast.makeText(MainActivity.this, "Trip started offline", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSuccess(HTTrip htTrip) {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip started: " + htTrip, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -166,6 +166,12 @@ public class MainActivity extends BaseActivity {
 
             HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
             transmitterService.completeTask(taskID, new HTCompleteTaskStatusCallback() {
+                @Override
+                public void onOfflineSuccess() {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Task completed: " + taskID, Toast.LENGTH_SHORT).show();
+                }
+
                 @Override
                 public void onError(Exception error) {
                     mProgressDialog.dismiss();
@@ -192,52 +198,30 @@ public class MainActivity extends BaseActivity {
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
-            // Check if TripID is available in the app
-            String tripID = SharedPreferenceStore.getTripID(MainActivity.this);
-            if (!TextUtils.isEmpty(tripID)) {
-                /**
-                 * Call {@link HTTransmitterService#endTrip(String, HTTripStatusCallback)} method in case
-                 * **Trip Id** has been passed on to the driver app by your backend or there are
-                 * multiple trips active for the driver. This method will end this trip for the given driver.
-                 */
-                transmitterService.endTrip(tripID, new HTTripStatusCallback() {
-                    @Override
-                    public void onSuccess(boolean isOffline, HTTrip htTrip) {
-                        mProgressDialog.dismiss();
-                        if (isOffline) {
-                            Toast.makeText(MainActivity.this, "Trip ended offline for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Trip ended: " + htTrip, Toast.LENGTH_SHORT).show();
-                        }
-                    }
+            /**
+             * Call {@link HTTransmitterService#endTrip(HTTripStatusCallback)} method in case
+             * **Trip Id** has been passed on to the driver app by your backend or there are
+             * multiple trips active for the driver. This method will end this trip for the given driver.
+             */
+            transmitterService.endTrip(new HTTripStatusCallback() {
+                @Override
+                public void onOfflineSuccess() {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip ended offline for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onError(Exception e) {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Trip end failed: " + e, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                @Override
+                public void onSuccess(HTTrip htTrip) {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip ended: " + htTrip, Toast.LENGTH_SHORT).show();
+                }
 
-            } else {
-                /**
-                 * Call {@link HTTransmitterService#endAllTrips(String, HTEndAllTripsCallback)} method in case
-                 * **Trip Id** is not available on the app. This method will ends all active trips for
-                 * the given driver.
-                 */
-                transmitterService.endAllTrips(driverID, new HTEndAllTripsCallback() {
-                    @Override
-                    public void onSuccess() {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Trip ended for Driver ID: " + driverID, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Trip end failed: " + e, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                @Override
+                public void onError(Exception e) {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Trip end failed: " + e, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     };
 
@@ -288,6 +272,11 @@ public class MainActivity extends BaseActivity {
         String shiftID = SharedPreferenceStore.getShiftID(this);
         if (!TextUtils.isEmpty(shiftID)) {
             transmitterService.endShift(new HTShiftStatusCallback() {
+                @Override
+                public void onOfflineSuccess() {
+                    // Do Nothing as Offline Handling is not enabled for Shifts yet
+                }
+
                 @Override
                 public void onSuccess(HTShift htShift) {
                     loadingLayout.setVisibility(View.GONE);
