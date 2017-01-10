@@ -32,12 +32,14 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Your ORDER_ID maps to HyperTrack's TASK_ID
+     * @NOTE: Enter YOUR_TASK_ID here before starting a trip with tasks
      */
-    private String taskID = "YOUR_TASK_ID";
+    private String taskID = null;
     /**
-     * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs
+     * YOUR_DRIVER_ID is received when a Driver entity is created using HyperTrack APIs
+     * @NOTE: Add your DRIVER_ID here to connect DriverSDK to HyperTrack Server
      */
-    private String driverID = "YOUR_DRIVER_ID";
+    private String driverID = "";
 
     private ProgressDialog mProgressDialog;
 
@@ -87,10 +89,7 @@ public class MainActivity extends BaseActivity {
          * <a href="https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
          *     https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
          */
-
-        if (!TextUtils.isEmpty(driverID)) {
-            HTTransmitterService.connectDriver(getApplicationContext(), driverID);
-        }
+        HTTransmitterService.connectDriver(getApplicationContext(), driverID);
     }
 
     private void initUIViews() {
@@ -124,8 +123,11 @@ public class MainActivity extends BaseActivity {
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
-            ArrayList<String> taskIDs = new ArrayList<>();
-            taskIDs.add(taskID);
+            ArrayList<String> taskIDs = null;
+            if (!TextUtils.isEmpty(taskID)) {
+                taskIDs = new ArrayList<>();
+                taskIDs.add(taskID);
+            }
 
             HTTripParams htTripParams = new HTTripParamsBuilder().setDriverID(driverID)
                     .setTaskIDs(taskIDs)
@@ -160,6 +162,11 @@ public class MainActivity extends BaseActivity {
     private View.OnClickListener completeTaskBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (TextUtils.isEmpty(taskID)) {
+                Toast.makeText(MainActivity.this, "CompleteTask Failed: TaskID is empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             mProgressDialog = new ProgressDialog(MainActivity.this);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
