@@ -39,6 +39,7 @@ import io.hypertrack.lib.transmitter.model.HTShift;
 import io.hypertrack.lib.transmitter.model.HTShiftParams;
 import io.hypertrack.lib.transmitter.model.HTShiftParamsBuilder;
 import io.hypertrack.lib.transmitter.model.callback.HTShiftStatusCallback;
+import io.hypertrack.lib.transmitter.model.callback.TransmitterErrorCallback;
 import io.hypertrack.lib.transmitter.service.HTTransmitterService;
 
 /**
@@ -64,8 +65,36 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     /**
      * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs.
      * The same DRIVER_ID can be used to maintain the session in b/w Login & Logout on the app.
+     * @NOTE: Add your DRIVER_ID here to connect DriverSDK to HyperTrack Server
      */
-    private String driverID = "YOUR_DRIVER_ID";
+    private String driverID = "";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        HTTransmitterService.connectDriver(getApplicationContext(), driverID, new TransmitterErrorCallback() {
+            @Override
+            public void onError(final int errorCode, final String errorMessage) {
+                // Handle connectDriver Error
+                onConnectDriverError(errorCode, errorMessage);
+            }
+        });
+    }
+
+    private void onConnectDriverError(final int errorCode, final String errorMessage) {
+        // Log the error on logcat console
+        Log.e(TAG, "HyperTrack connectDriver Error, Code: " + errorCode + ", Message: " + errorMessage);
+
+        // Print the Error on Toast message
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(LoginActivity.this, "HyperTrack connectDriver Error, Code: "
+                        + errorCode + ", Message: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
