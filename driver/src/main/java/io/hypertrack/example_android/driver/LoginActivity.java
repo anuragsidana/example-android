@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ import io.hypertrack.lib.transmitter.model.HTShift;
 import io.hypertrack.lib.transmitter.model.HTShiftParams;
 import io.hypertrack.lib.transmitter.model.HTShiftParamsBuilder;
 import io.hypertrack.lib.transmitter.model.callback.HTShiftStatusCallback;
+import io.hypertrack.lib.transmitter.model.callback.TransmitterErrorCallback;
 import io.hypertrack.lib.transmitter.service.HTTransmitterService;
 
 /**
@@ -57,6 +59,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     private TextInputLayout userNameHeader, passwordHeader;
     private EditText userNameText, passwordText;
     private LinearLayout loginBtnLoader;
+    private CheckBox startShiftCheckbox;
 
     // Boolean to attemptDriverLogin on Location settings grant, if Login Button was clicked
     private boolean loginButtonClicked = false;
@@ -64,8 +67,51 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     /**
      * DRIVER_ID is received when a Driver entity is created using HyperTrack APIs.
      * The same DRIVER_ID can be used to maintain the session in b/w Login & Logout on the app.
+     * @NOTE: Add your DRIVER_ID here to connect DriverSDK to HyperTrack Server
      */
-    private String driverID = "YOUR_DRIVER_ID";
+    private String driverID = "";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /**
+         * Method to establish DriverSDK connection for a DriverID. Call this method when the DriverSDK connection
+         * needs to established, to be able to implement backend-start calls. (Preferably in the onResume()
+         * method of your app's Launcher Activity)
+         * <p>
+         * For more reliability in backend-start calls, call this method just before backend-start need to
+         * happen in your app's workflow.
+         *
+         * For more info refer to the documentation at
+         * <a href="https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk">
+         *     https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk</a>.
+         *
+         * For {@link HTTransmitterService} API javadocs, refer to
+         * <a href="https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
+         *     https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
+         */
+        HTTransmitterService.connectDriver(getApplicationContext(), driverID, new TransmitterErrorCallback() {
+            @Override
+            public void onError(final int errorCode, final String errorMessage) {
+                // Handle connectDriver Error
+                onConnectDriverError(errorCode, errorMessage);
+            }
+        });
+    }
+
+    private void onConnectDriverError(final int errorCode, final String errorMessage) {
+        // Log the error on logcat console
+        Log.e(TAG, "HyperTrack connectDriver Error, Code: " + errorCode + ", Message: " + errorMessage);
+
+        // Print the Error on Toast message
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(LoginActivity.this, "HyperTrack connectDriver Error, Code: "
+                        + errorCode + ", Message: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,6 +141,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         passwordText = (EditText) findViewById(R.id.login_password);
         if (passwordText != null)
             passwordText.addTextChangedListener(passwordTextWatcher);
+
+        // CheckBox to indicate whether to startShift on Login
+        startShiftCheckbox = (CheckBox) findViewById(R.id.login_start_shift_checkbox);
 
         // Initialize Login Btn Loader
         loginBtnLoader = (LinearLayout) findViewById(R.id.login_driver_login_btn_loader);
@@ -135,7 +184,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     };
 
     public void onLoginButtonClick(View view) {
-        if (!validateUserCredentials())
+        if (!validateDriverCredentials())
             return;
 
         // Set Login Button clicked to attemptDriverLogin, if Location Settings are enabled
@@ -143,6 +192,22 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
         // Check if Location Settings are enabled, if yes then attempt DriverLogin
         checkForLocationPermission();
+    }
+
+    private boolean validateDriverCredentials() {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(userNameText.getText())) {
+            userNameHeader.setError(getString(R.string.login_username_empty_error));
+            valid = false;
+        }
+
+        if (TextUtils.isEmpty(passwordText.getText())) {
+            passwordHeader.setError(getString(R.string.login_password_empty_error));
+            valid = false;
+        }
+
+        return valid;
     }
 
     private void attemptDriverLogin() {
@@ -160,10 +225,27 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         // driverID = "YOUR_DRIVER_ID";
         SharedPreferenceStore.setDriverID(getApplicationContext(), driverID);
 
-        onDriverLoginSuccess();
+        // Check if DriverID has been configured in DriverSDK
+        if (TextUtils.isEmpty(driverID)) {
+            Toast.makeText(LoginActivity.this, "Login Failed: DriverID not configured!", Toast.LENGTH_SHORT).show();
+            loginBtnLoader.setVisibility(View.GONE);
+        } else {
+            onDriverLoginSuccess();
+        }
     }
 
     private void onDriverLoginSuccess() {
+        // Check if shift has to be started on Driver Login or not
+        if (!startShiftCheckbox.isChecked()) {
+            // Start Driver Session by starting MainActivity
+            TaskStackBuilder.create(LoginActivity.this)
+                    .addNextIntentWithParentStack(new Intent(LoginActivity.this, MainActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    .startActivities();
+            finish();
+            return;
+        }
+
         HTShiftParams htShiftParams = new HTShiftParamsBuilder().setDriverID(driverID).createHTShiftParams();
 
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
@@ -197,22 +279,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 loginBtnLoader.setVisibility(View.GONE);
             }
         });
-    }
-
-    private boolean validateUserCredentials() {
-        boolean valid = true;
-
-        if (TextUtils.isEmpty(userNameText.getText())) {
-            userNameHeader.setError(getString(R.string.login_username_empty_error));
-            valid = false;
-        }
-
-        if (TextUtils.isEmpty(passwordText.getText())) {
-            passwordHeader.setError(getString(R.string.login_password_empty_error));
-            valid = false;
-        }
-
-        return valid;
     }
 
     private void initGoogleClient() {
@@ -340,7 +406,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e(TAG, "GoogleApiClient onConnected");
+        Log.i(TAG, "GoogleApiClient onConnected");
     }
 
     @Override
