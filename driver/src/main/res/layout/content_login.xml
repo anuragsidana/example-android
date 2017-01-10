@@ -37,6 +37,7 @@
         android:id="@+id/login.password_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_base"
         app:errorEnabled="true">
 
         <EditText
@@ -47,10 +48,18 @@
             android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
 
+    <CheckBox
+        android:id="@+id/login.start_shift_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_base"
+        android:text="Start Shift on Login?"/>
+
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_high"
         app:cardCornerRadius="2dp"
         app:cardElevation="2dp">
 

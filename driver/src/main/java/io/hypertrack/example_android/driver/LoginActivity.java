@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -58,6 +59,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     private TextInputLayout userNameHeader, passwordHeader;
     private EditText userNameText, passwordText;
     private LinearLayout loginBtnLoader;
+    private CheckBox startShiftCheckbox;
 
     // Boolean to attemptDriverLogin on Location settings grant, if Login Button was clicked
     private boolean loginButtonClicked = false;
@@ -140,6 +142,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         if (passwordText != null)
             passwordText.addTextChangedListener(passwordTextWatcher);
 
+        // CheckBox to indicate whether to startShift on Login
+        startShiftCheckbox = (CheckBox) findViewById(R.id.login_start_shift_checkbox);
+
         // Initialize Login Btn Loader
         loginBtnLoader = (LinearLayout) findViewById(R.id.login_driver_login_btn_loader);
     }
@@ -179,7 +184,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     };
 
     public void onLoginButtonClick(View view) {
-        if (!validateUserCredentials())
+        if (!validateDriverCredentials())
             return;
 
         // Set Login Button clicked to attemptDriverLogin, if Location Settings are enabled
@@ -187,6 +192,22 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
         // Check if Location Settings are enabled, if yes then attempt DriverLogin
         checkForLocationPermission();
+    }
+
+    private boolean validateDriverCredentials() {
+        boolean valid = true;
+
+        if (TextUtils.isEmpty(userNameText.getText())) {
+            userNameHeader.setError(getString(R.string.login_username_empty_error));
+            valid = false;
+        }
+
+        if (TextUtils.isEmpty(passwordText.getText())) {
+            passwordHeader.setError(getString(R.string.login_password_empty_error));
+            valid = false;
+        }
+
+        return valid;
     }
 
     private void attemptDriverLogin() {
@@ -204,10 +225,27 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         // driverID = "YOUR_DRIVER_ID";
         SharedPreferenceStore.setDriverID(getApplicationContext(), driverID);
 
-        onDriverLoginSuccess();
+        // Check if DriverID has been configured in DriverSDK
+        if (TextUtils.isEmpty(driverID)) {
+            Toast.makeText(LoginActivity.this, "Login Failed: DriverID not configured!", Toast.LENGTH_SHORT).show();
+            loginBtnLoader.setVisibility(View.GONE);
+        } else {
+            onDriverLoginSuccess();
+        }
     }
 
     private void onDriverLoginSuccess() {
+        // Check if shift has to be started on Driver Login or not
+        if (!startShiftCheckbox.isChecked()) {
+            // Start Driver Session by starting MainActivity
+            TaskStackBuilder.create(LoginActivity.this)
+                    .addNextIntentWithParentStack(new Intent(LoginActivity.this, MainActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    .startActivities();
+            finish();
+            return;
+        }
+
         HTShiftParams htShiftParams = new HTShiftParamsBuilder().setDriverID(driverID).createHTShiftParams();
 
         HTTransmitterService transmitterService = HTTransmitterService.getInstance(getApplicationContext());
@@ -241,22 +279,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 loginBtnLoader.setVisibility(View.GONE);
             }
         });
-    }
-
-    private boolean validateUserCredentials() {
-        boolean valid = true;
-
-        if (TextUtils.isEmpty(userNameText.getText())) {
-            userNameHeader.setError(getString(R.string.login_username_empty_error));
-            valid = false;
-        }
-
-        if (TextUtils.isEmpty(passwordText.getText())) {
-            passwordHeader.setError(getString(R.string.login_password_empty_error));
-            valid = false;
-        }
-
-        return valid;
     }
 
     private void initGoogleClient() {
@@ -384,7 +406,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e(TAG, "GoogleApiClient onConnected");
+        Log.i(TAG, "GoogleApiClient onConnected");
     }
 
     @Override
