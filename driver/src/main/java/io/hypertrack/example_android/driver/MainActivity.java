@@ -80,12 +80,12 @@ public class MainActivity extends BaseActivity {
          * happen in your app's workflow.
          *
          * For more info refer to the documentation at
-         * <a href="http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec">
-         *     http://docs.hypertrack.io/docs/getting-started-android-driver#step-3-for-backend-start-initiate-driversdk-connec</a>.
+         * <a href="https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk">
+         *     https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk</a>.
          *
          * For {@link HTTransmitterService} API javadocs, refer to
-         * <a href="https://hypertrack.github.io/android-docs/1.4.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
-         *     https://hypertrack.github.io/android-docs/1.4.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
+         * <a href="https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
+         *     https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
          */
 
         if (!TextUtils.isEmpty(driverID)) {
