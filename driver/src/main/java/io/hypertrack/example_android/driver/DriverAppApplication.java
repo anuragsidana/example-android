@@ -15,8 +15,9 @@ public class DriverAppApplication extends Application{
         super.onCreate();
 
         // Set HyperTrack Publishable Key & Initialize TransmitterSDK
-        HyperTrack.setPublishableApiKey("YOUR_PUBLISHABLE_KEY", getApplicationContext());
+        // @NOTE: Add **YOUR_PUBLISHABLE_KEY** here for DriverSDK to authenticate
+        // with HyperTrack Server
+        HyperTrack.setPublishableApiKey("", getApplicationContext());
         HTTransmitterService.initHTTransmitter(getApplicationContext());
-
     }
 }
