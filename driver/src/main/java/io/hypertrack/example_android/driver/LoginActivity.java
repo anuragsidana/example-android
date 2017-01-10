@@ -72,7 +72,22 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     @Override
     protected void onResume() {
         super.onResume();
-
+        /**
+         * Method to establish DriverSDK connection for a DriverID. Call this method when the DriverSDK connection
+         * needs to established, to be able to implement backend-start calls. (Preferably in the onResume()
+         * method of your app's Launcher Activity)
+         * <p>
+         * For more reliability in backend-start calls, call this method just before backend-start need to
+         * happen in your app's workflow.
+         *
+         * For more info refer to the documentation at
+         * <a href="https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk">
+         *     https://docs.hypertrack.io/sdks/android/installing.html#connect-the-sdk</a>.
+         *
+         * For {@link HTTransmitterService} API javadocs, refer to
+         * <a href="https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html">
+         *     https://hypertrack.github.io/android-docs/1.5.4/driver/io/hypertrack/lib/transmitter/service/HTTransmitterService.html</a>
+         */
         HTTransmitterService.connectDriver(getApplicationContext(), driverID, new TransmitterErrorCallback() {
             @Override
             public void onError(final int errorCode, final String errorMessage) {
