@@ -27,7 +27,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
-    compile('io.hypertrack:consumer:1.5.9:release@aar') {
+    compile('io.hypertrack:consumer:1.5.10:release@aar') {
         transitive = true;
     }
 
