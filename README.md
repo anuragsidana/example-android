@@ -1,48 +1,33 @@
 # HyperTrack example Android apps
-[![Slack Status](http://slack.hypertrack.io/badge.svg)](http://slack.hypertrack.io)
+[![Slack Status](http://slack.hypertrack.com/badge.svg)](http://slack.hypertrack.com)
 
-Example application built with the HyperTrack `TransmitterSDK` and `ConsumerSDK` for Android. For the iOS equivalent, refer to [example-ios](https://github.com/hypertrack/example-ios).
+Example application built with the `HyperTrack SDK` for Android. For the iOS equivalent, refer to [example-ios](https://github.com/hypertrack/example-ios).
 
 ## Example modules
-1. Driver - example of integration with `TransmitterSDK`, which transmits location data for HyperTrack Trips/Shifts
-2. Consumer - example of integration with `ConsumerSDK`, which allows real-time tracking of HyperTrack Tasks on a map
+1. app - example of integration with `HyperTrack SDK`, which transmits location data for HyperTrack User
 
 ## Requirements
 1. Android studio with emulator (or test device)
-2. HyperTrack API keys. Learn more about them [here](http://docs.hypertrack.io/docs/get-api-keys).
+2. HyperTrack API keys. Learn more about them [here](https://docs.hypertrack.com/v3/gettingstarted/authentication.html).
 
-## Usage: Driver
+## Usage:
 ![Driver example](readme-imgs/driver.gif)
 
-The example Driver application implements both Shifts and Trips. Read our [definitions](http://docs.hypertrack.io/docs/definitions) to know more.
+The example application implements tracking a User in the background as well as tracking a User on an Action. Read our [introduction](https://docs.hypertrack.com/) to know more.
 
-Recommended: Take a look at the Android driver [quickstart](http://docs.hypertrack.io/docs/start-a-trip-in-android).
-
-**STEPS**
-
-1. Sync the Gradle files to download the HyperTrack SDKs.
-2. Replace `YOUR_PUBLISHABLE_KEY` with your key in `DriverAppApplication.java`.
-3. Replace `YOUR_DRIVER_ID` and `YOUR_TASK_ID` with the respective ids in `LoginActivity.java` for Shift and `MainActivity.java` for Trip.
-4. Run in emulator. You might need to enable the location permission: see [how](readme-imgs/location.gif).
-
-## Usage: Consumer
-![Consumer example](readme-imgs/consumer.gif)
-
-The example Consumer application tracks one Task on a map. Read our [definitions](http://docs.hypertrack.io/docs/definitions) to know more.
-
-Recommended: Take a look at the Android consumer [quickstart](http://docs.hypertrack.io/docs/track-a-task-in-android).
+Recommended: Take a look at the Android [documentation](https://docs.hypertrack.com/v3/sdks/android/installing.html).
 
 **STEPS**
 
 1. Sync the Gradle files to download the HyperTrack SDKs.
-2. Replace `YOUR_PUBLISHABLE_KEY`, with your key, and `YOUR_TASK_ID` with the id of the Task to be tracked in `MainActivity.java`.
-3. Run in emulator.
+2. Replace `YOUR_PUBLISHABLE_KEY` with your key in `ExampleAppApplication.java`.
+3. Run in emulator. You might need to enable the location permission: see [how](readme-imgs/location.gif).
 
 ## Documentation
-For detailed documentation of the methods and customizations, please visit the official [docs](https://docs.hypertrack.io/).
+For detailed documentation of the methods and customizations, please visit the official [docs](https://docs.hypertrack.com/).
 
 ## Contribute
 Please use the [issues tracker](https://github.com/hypertrack/example-android/issues) to raise bug reports and feature requests. We'd love to see your pull requests - send them in!
 
 ## Support
-Join our [Slack community](http://slack.hypertrack.io) for instant responses. You can also email us at help@hypertrack.io
+Join our [Slack community](http://slack.hypertrack.com) for instant responses. You can also email us at help@hypertrack.com.
