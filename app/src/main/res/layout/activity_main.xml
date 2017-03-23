@@ -56,16 +56,16 @@
                             android:text="@string/assign_action_btn" />
 
                         <Button
-                            android:id="@+id/completeActionButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/complete_action_btn" />
-
-                        <Button
                             android:id="@+id/trackUserOnMapButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/track_user_on_map_btn"/>
+
+                        <Button
+                            android:id="@+id/completeActionButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/complete_action_btn" />
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>

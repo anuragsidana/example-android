@@ -1,8 +1,6 @@
 package com.hypertrack.example_android;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,10 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.hypertrack.example_android.util.BaseActivity;
+import com.hypertrack.example_android.util.SharedPreferenceStore;
 import com.hypertrack.lib.HyperTrack;
 import com.hypertrack.lib.callbacks.HyperTrackCallback;
 import com.hypertrack.lib.models.Action;
@@ -23,11 +21,11 @@ import com.hypertrack.lib.models.ActionParamsBuilder;
 import com.hypertrack.lib.models.ErrorResponse;
 import com.hypertrack.lib.models.SuccessResponse;
 
+import java.util.ArrayList;
+
 public class MainActivity extends BaseActivity {
 
-    private LinearLayout loadingLayout;
     private ProgressDialog mProgressDialog;
-    private String actionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +60,6 @@ public class MainActivity extends BaseActivity {
         Button trackDriverOnMapButton = (Button) findViewById(R.id.trackUserOnMapButton);
         if (trackDriverOnMapButton != null)
             trackDriverOnMapButton.setOnClickListener(trackDriverOnMapBtnClickListener);
-
-        loadingLayout = (LinearLayout) findViewById(R.id.main_loading_layout);
     }
 
     // Click Listener for AssignAction Button
@@ -90,7 +86,7 @@ public class MainActivity extends BaseActivity {
 
                     if (response.getResponseObject() != null) {
                         Action action = (Action) response.getResponseObject();
-                        actionId = action.getId();
+                        SharedPreferenceStore.setActionID(MainActivity.this, action.getId());
 
                         Toast.makeText(MainActivity.this, "Action (id = " + action.getId() + ") assigned successfully.",
                                 Toast.LENGTH_SHORT).show();
@@ -114,6 +110,7 @@ public class MainActivity extends BaseActivity {
     private View.OnClickListener completeActionBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            String actionId = SharedPreferenceStore.getActionID(MainActivity.this);
             if (TextUtils.isEmpty(actionId)) {
                 Toast.makeText(MainActivity.this, "CompleteAction Failed: ActionID is empty", Toast.LENGTH_SHORT).show();
                 return;
@@ -123,6 +120,7 @@ public class MainActivity extends BaseActivity {
             HyperTrack.completeAction(actionId);
 
             Toast.makeText(MainActivity.this, "Action (id = " + actionId + ") completed successfully.", Toast.LENGTH_SHORT).show();
+            SharedPreferenceStore.clearActionID(MainActivity.this);
         }
 
     };
@@ -130,39 +128,52 @@ public class MainActivity extends BaseActivity {
     private View.OnClickListener trackDriverOnMapBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-            // Check if Driver is Active currently
-            if (!HyperTrack.isTracking()) {
-
-                // User is not tracking, Dialog to proceed to DriverMap Screen
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage(R.string.track_user_on_map_dialog_title);
-                builder.setPositiveButton(MainActivity.this.getString(android.R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                proceedToDriverMapScreen();
-                            }
-                        });
-                builder.setNegativeButton(MainActivity.this.getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                builder.show();
+            String actionId = SharedPreferenceStore.getActionID(MainActivity.this);
+            // Validate ActionId before tracking it on Live Tracking View
+            if (TextUtils.isEmpty(actionId)) {
+                Toast.makeText(MainActivity.this, "ActionId is empty. Please provide a valid actions " +
+                        "for trackActionsForUser.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Driver is ACTIVE, Proceed to DriverMapScreen
-            proceedToDriverMapScreen();
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
+            // Create a list of Actions to be tracked on Live Tracking View
+            final ArrayList<String> actions = new ArrayList<>();
+            actions.add(actionId);
+
+            HyperTrack.trackActionsForUser(actions, new HyperTrackCallback() {
+                @Override
+                public void onSuccess(@NonNull SuccessResponse successResponse) {
+                    if (mProgressDialog != null) {
+                        mProgressDialog.dismiss();
+                    }
+
+                    Toast.makeText(MainActivity.this, "trackActionsForUser successful for ActionsList: "
+                            + actions, Toast.LENGTH_SHORT).show();
+
+                    // Open Activity with HyperTrack MapFragment
+                    proceedToLiveTrackingScreen(actions);
+                }
+
+                @Override
+                public void onError(@NonNull ErrorResponse errorResponse) {
+                    if (mProgressDialog != null) {
+                        mProgressDialog.dismiss();
+                    }
+
+                    Toast.makeText(MainActivity.this, errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     };
 
-    private void proceedToDriverMapScreen() {
-        Intent driverMapIntent = new Intent(MainActivity.this, UserMapActivity.class);
-        startActivity(driverMapIntent);
+    private void proceedToLiveTrackingScreen(ArrayList<String> actions) {
+        Intent userMapIntent = new Intent(MainActivity.this, UserMapActivity.class);
+        userMapIntent.putStringArrayListExtra("actions", actions);
+        startActivity(userMapIntent);
     }
 
     public void onLogoutClicked(MenuItem menuItem) {

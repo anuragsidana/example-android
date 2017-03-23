@@ -4,7 +4,7 @@
 
     <string name="assign_action_btn">Assign an Action</string>
     <string name="complete_action_btn">Complete Action</string>
-    <string name="track_user_on_map_btn">Track User on Map</string>
+    <string name="track_user_on_map_btn">Track User\'s actions on Map</string>
 
     <string name="action_settings">Settings</string>
 
