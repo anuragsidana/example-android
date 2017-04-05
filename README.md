@@ -20,8 +20,10 @@ Recommended: Take a look at the Android [documentation](https://docs.hypertrack.
 **STEPS**
 
 1. Sync the Gradle files to download the HyperTrack SDKs.
-2. Replace `YOUR_PUBLISHABLE_KEY` with your key in `ExampleAppApplication.java`.
-3. Run in emulator. You might need to enable the location permission: see [how](readme-imgs/location.gif).
+2. Replace `YOUR_PUBLISHABLE_KEY` with your Hypertrack API key in `ExampleAppApplication.java` [here](https://github.com/hypertrack/example-android/blob/master/app/src/main/java/com/hypertrack/example_android/ExampleAppApplication.java#L19).
+3. Setup a Google Maps API key. More info [here](https://developers.google.com/maps/documentation/android-api/start) and the steps to get an API key are [here](https://developers.google.com/maps/documentation/android-api/start#step_4_get_a_google_maps_api_key).
+4. Add the API key [here](https://github.com/hypertrack/meta-android/blob/develop/app/src/main/AndroidManifest.xml#L207).
+5. Run in emulator. You might need to enable the location permission: see [how](readme-imgs/location.gif).
 
 ## Documentation
 For detailed documentation of the methods and customizations, please visit the official [docs](https://docs.hypertrack.com/).
