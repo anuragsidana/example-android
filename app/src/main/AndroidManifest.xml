@@ -39,6 +39,8 @@
         <activity android:name=".UserMapActivity"
             android:screenOrientation="portrait"/>
 
+        <!-- Setup a Google Maps API key. More info at https://developers.google.com/maps/documentation/android-api/start
+         and the steps to get an API key are at https://developers.google.com/maps/documentation/android-api/start#step_4_get_a_google_maps_api_key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value=<YOUR_GOOGLE_API_KEY_HERE> />
