@@ -26,42 +26,6 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity {
 
     private ProgressDialog mProgressDialog;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initToolbar(getString(R.string.app_name), false);
-
-        // Initialize UI Views
-        initUIViews();
-
-        /**
-         * @IMPORTANT:
-         * Implement Network call to fetch ORDERS/TRANSACTIONS for the User here.
-         * Once the list of orders/transactions have been fetched, implement
-         * assignAction and completeAction calls either with or without user interaction
-         * depending on the specific requirements in the workflow of your business and your app.
-         */
-    }
-
-    private void initUIViews() {
-        // Initialize AssignAction Button
-        Button assignActionBtn = (Button) findViewById(R.id.assignActionButton);
-        if (assignActionBtn != null)
-            assignActionBtn.setOnClickListener(assignActionBtnListener);
-
-        // Initialize CompleteAction Button
-        Button completeActionBtn = (Button) findViewById(R.id.completeActionButton);
-        if (completeActionBtn != null)
-            completeActionBtn.setOnClickListener(completeActionBtnListener);
-
-        Button trackDriverOnMapButton = (Button) findViewById(R.id.trackUserOnMapButton);
-        if (trackDriverOnMapButton != null)
-            trackDriverOnMapButton.setOnClickListener(trackDriverOnMapBtnClickListener);
-    }
-
     // Click Listener for AssignAction Button
     private View.OnClickListener assignActionBtnListener = new View.OnClickListener() {
         @Override
@@ -105,7 +69,6 @@ public class MainActivity extends BaseActivity {
             });
         }
     };
-
     // Click Listener for CompleteAction Button
     private View.OnClickListener completeActionBtnListener = new View.OnClickListener() {
         @Override
@@ -124,7 +87,6 @@ public class MainActivity extends BaseActivity {
         }
 
     };
-
     private View.OnClickListener trackDriverOnMapBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -144,7 +106,7 @@ public class MainActivity extends BaseActivity {
             final ArrayList<String> actions = new ArrayList<>();
             actions.add(actionId);
 
-            HyperTrack.trackActionsForUser(actions, new HyperTrackCallback() {
+            HyperTrack.trackAction(actions, new HyperTrackCallback() {
                 @Override
                 public void onSuccess(@NonNull SuccessResponse successResponse) {
                     if (mProgressDialog != null) {
@@ -169,6 +131,41 @@ public class MainActivity extends BaseActivity {
             });
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initToolbar(getString(R.string.app_name), false);
+
+        // Initialize UI Views
+        initUIViews();
+
+        /**
+         * @IMPORTANT:
+         * Implement Network call to fetch ORDERS/TRANSACTIONS for the User here.
+         * Once the list of orders/transactions have been fetched, implement
+         * assignAction and completeAction calls either with or without user interaction
+         * depending on the specific requirements in the workflow of your business and your app.
+         */
+    }
+
+    private void initUIViews() {
+        // Initialize AssignAction Button
+        Button assignActionBtn = (Button) findViewById(R.id.assignActionButton);
+        if (assignActionBtn != null)
+            assignActionBtn.setOnClickListener(assignActionBtnListener);
+
+        // Initialize CompleteAction Button
+        Button completeActionBtn = (Button) findViewById(R.id.completeActionButton);
+        if (completeActionBtn != null)
+            completeActionBtn.setOnClickListener(completeActionBtnListener);
+
+        Button trackDriverOnMapButton = (Button) findViewById(R.id.trackUserOnMapButton);
+        if (trackDriverOnMapButton != null)
+            trackDriverOnMapButton.setOnClickListener(trackDriverOnMapBtnClickListener);
+    }
 
     private void proceedToLiveTrackingScreen(ArrayList<String> actions) {
         Intent userMapIntent = new Intent(MainActivity.this, UserMapActivity.class);
