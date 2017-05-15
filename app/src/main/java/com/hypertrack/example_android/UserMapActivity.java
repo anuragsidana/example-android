@@ -20,6 +20,12 @@ import java.util.ArrayList;
 public class UserMapActivity extends AppCompatActivity {
 
     ArrayList<String> actions;
+    private MapFragmentCallback mapFragmentCallback = new MapFragmentCallback() {
+        @Override
+        public void onMapReadyCallback(HyperTrackMapFragment hyperTrackMapFragment, GoogleMap map) {
+            // Handle onMapReady callback here
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +52,12 @@ public class UserMapActivity extends AppCompatActivity {
         htMapFragment.setMapFragmentCallback(mapFragmentCallback);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        HyperTrack.removeActions(null);
+    }
+
     public class MyMapAdapter extends HyperTrackMapAdapter {
         public MyMapAdapter(Context mContext) {
             super(mContext);
@@ -57,18 +69,5 @@ public class UserMapActivity extends AppCompatActivity {
             // and disable hero marker for pickup action
             return super.showHeroMarkerForActionID(hyperTrackMapFragment, actionID);
         }
-    }
-
-    private MapFragmentCallback mapFragmentCallback = new MapFragmentCallback() {
-        @Override
-        public void onMapReadyCallback(HyperTrackMapFragment hyperTrackMapFragment, GoogleMap map) {
-            // Handle onMapReady callback here
-        }
-    };
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        HyperTrack.removeActions(actions);
     }
 }
