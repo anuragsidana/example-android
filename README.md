@@ -8,14 +8,14 @@ Example application built with the `HyperTrack SDK` for Android. For the iOS equ
 
 ## Requirements
 1. [Android Studio](https://developer.android.com/studio/index.html) with emulator (or test device)
-2. HyperTrack API keys. Learn more about them [here](https://docs.hypertrack.com/v3/gettingstarted/authentication.html), and sign up for them [here](https://dashboard.hypertrack.com/signup).
+2. HyperTrack API keys. Learn more about them [here](https://docs.hypertrack.com/gettingstarted/authentication.html), and sign up for them [here](https://dashboard.hypertrack.com/signup).
 
 ## Usage:
 ![Driver example](readme-imgs/driver.gif)
 
 The example application implements tracking a User in the background as well as tracking a User on an Action. Read our [introduction](https://docs.hypertrack.com/) to know more.
 
-Recommended: Take a look at the Android [documentation](https://docs.hypertrack.com/v3/sdks/android/installing.html).
+Recommended: Take a look at the Android [documentation](https://docs.hypertrack.com/sdks/android/setup.html).
 
 **STEPS**
 
