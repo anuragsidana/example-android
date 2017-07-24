@@ -149,7 +149,7 @@ public class LoginActivity extends BaseActivity {
          * Implement your API call for User Login and get back a HyperTrack UserId from your API Server
          * to be configured in the HyperTrack SDK.
          */
-        HyperTrack.createUser(name, phoneNumber, new HyperTrackCallback() {
+         HyperTrack.getOrCreateUser(name, phoneNumber, name, new HyperTrackCallback() {
             @Override
             public void onSuccess(@NonNull SuccessResponse successResponse) {
                 // Hide Login Button loader
